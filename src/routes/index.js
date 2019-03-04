@@ -1,16 +1,30 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router'
+import Loadable from 'react-loadable';
+import NotFound from './404';
+import RouteWithStatusCode from './../components/router/RouteWithStatusCode';
 
 import Home from './home'
-import Search from './search'
-import Terms from './terms'
+
+const Search = Loadable({
+  loader: () => import(/* webpackChunkName: "search" */ './search'),
+  loading: () => null,
+  modules: ['search']
+});
+
+const Terms = Loadable({
+  loader: () => import(/* webpackChunkName: "terms-page" */ './terms'),
+  loading: () => null,
+  modules: ['terms']
+});
 
 const BasicExample = () => (
-  <div>
+  <Switch>
     <Route exact path="/" component={Home}/>
     <Route path="/search" component={Search}/>
     <Route path="/terms" component={Terms}/>
-  </div>
+    <RouteWithStatusCode code={404} component={NotFound}/>
+  </Switch>
 )
 
 export default BasicExample

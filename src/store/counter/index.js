@@ -16,11 +16,12 @@ export function increment() {
 // Specialized Action Creator
 // ------------------------------------
 export const asyncIncrement = () => (dispatch) => {
-  console.log('123')
-  setTimeout(() => {
-    console.log('tatat')
-    dispatch(increment());
-  }, 500)
+  return new Promise(resolve => {
+    setTimeout(() => {
+      dispatch(increment());
+      resolve();
+    }, 500)
+  })
 };
 
 // ------------------------------------

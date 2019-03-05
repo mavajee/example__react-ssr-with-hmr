@@ -55,10 +55,13 @@ module.exports = function(app) {
     }
 
     res.status(context.status);
+    // console.log('teteet')
     // const html = template.replace(
     //   '<div id="root"></div>',
-    //   `<div id="root">${routeMarkup}</div><script>window.__INITIAL_STATE__ = ${JSON.stringify(context.state)}</script>`
+    //   `<div id="root"><hr>${routeMarkup}</div><script>window.__INITIAL_STATE__ = ${JSON.stringify(context.state)}</script>`
     // );
+    // console.log(html)
+
     const html = templateRenderer
       .addContent(routeMarkup)
       .addState(context.state)

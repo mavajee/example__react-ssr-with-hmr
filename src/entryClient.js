@@ -1,31 +1,41 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import ClientApp from './ClientApp'
-import * as serviceWorker from './serviceWorker';
-import './index.css';
+import ClientApp from "./ClientApp";
+import * as serviceWorker from "./serviceWorker";
+import "./index.css";
 
-// const renderApp = (app) => {
-//   const root = document.getElementById('root');
-  
-//   if (root.hasChildNodes() === true) {
-//     // If it's an SSR, we use hydrate to get fast page loads by just
-//     // attaching event listeners after the initial render
-//     ReactDom.hydrate(app, root);
-//   } else {
-//     // If we're not running on the server, just render like normal
-//     ReactDom.render(app, root);
-//   }
-// }
+import routes from "./routes";
+import { matchRoutes } from "react-router-config";
 
-ReactDOM.render(<ClientApp />, document.getElementById('root'));
+// ReactDOM.render(<ClientApp />, document.getElementById('root'));
+const root = document.getElementById("root");
+
+if (root.hasChildNodes() === true) {
+  // To avoid hydrate warning and app rerender we should preload all needed async component
+  const promises = matchRoutes(routes, window.location.pathname).map(
+    ({ route }) =>
+      route.component
+        ? route.component.preload
+          ? route.component.preload().then(res => res.default)
+          : route.component
+        : null
+  );
+
+  Promise.all(promises).then(() => {
+    ReactDOM.hydrate(<ClientApp />, root);
+  });
+} else {
+  // If we're not running on the server, just render like normal
+  ReactDOM.render(<ClientApp />, root);
+}
 
 // Enable hot reload
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   if (module.hot) {
-    module.hot.accept('./ClientApp', () => {
-      ReactDOM.render(<ClientApp />, document.getElementById('root'))
-    })
+    module.hot.accept("./ClientApp", () => {
+      ReactDOM.render(<ClientApp />, root);
+    });
   }
 }
 

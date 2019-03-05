@@ -484,7 +484,7 @@ module.exports = function(webpackEnv) {
             inject: true,
             template: paths.appHtml,
           },
-          isEnvProduction
+          true
             ? {
                 minify: {
                   removeComments: true,

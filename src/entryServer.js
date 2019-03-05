@@ -6,45 +6,47 @@ import BaseLayout from "./BaseLayout";
 import createStore from "./store/createStore";
 import Loadable from "react-loadable";
 
-import routes from "./routes/routes";
+import routes from "./routes";
 import { matchRoutes } from "react-router-config";
 
-export default () => {
-  return Loadable.preloadAll().then(() => {
-    return async (routeLocation, context) => {
-      const store = createStore();
+export default async function createAppRender() {
+  await Loadable.preloadAll();
 
-      const routeMatches = [];
-      const preloadComponentPromises = []
+  return async function renderApp(routeLocation, context) {
+    const store = createStore();
 
-      matchRoutes(routes, routeLocation).forEach( ({ route, match }) => {
-        routeMatches.push(match)
-        preloadComponentPromises.push(
-          route.component
-            ? route.component.preload
-              ? route.component.preload().then(res => res.default)
-              : route.component
-            : null
-        )
-      });
+    const routeMatches = [];
+    const preloadComponentPromises = [];
 
-      const fetchingPromises = (await Promise.all(preloadComponentPromises)).map((component, index) => {
-        return component && component.fetching
-          ? component.fetching({store, match: routeMatches[index]})
+    matchRoutes(routes, routeLocation).forEach(({ route, match }) => {
+      routeMatches.push(match);
+      preloadComponentPromises.push(
+        route.component
+          ? route.component.preload
+            ? route.component.preload().then(res => res.default)
+            : route.component
           : null
-      })
-
-      await Promise.all(fetchingPromises)
-
-      context.state = store.getState();
-
-      return (
-        <Provider store={store}>
-          <StaticRouter location={routeLocation} context={context}>
-            <BaseLayout />
-          </StaticRouter>
-        </Provider>
       );
-    };
-  });
-};
+    });
+
+    const fetchingPromises = (await Promise.all(preloadComponentPromises)).map(
+      (component, index) => {
+        return component && component.fetching
+          ? component.fetching({ store, match: routeMatches[index] })
+          : null;
+      }
+    );
+
+    await Promise.all(fetchingPromises);
+
+    context.state = store.getState();
+
+    return (
+      <Provider store={store}>
+        <StaticRouter location={routeLocation} context={context}>
+          <BaseLayout />
+        </StaticRouter>
+      </Provider>
+    );
+  };
+}

@@ -1,25 +1,15 @@
 import React, { Component } from 'react';
-// import { Provider } from 'react-redux'
-import { matchRoutes, renderRoutes } from "react-router-config";
+import { renderRoutes } from "react-router-config";
 
 import Header from './components/header';
-// import Routes from './routes';
-import routes from './routes/routes';
-// import createStore from './store/createStore'
-
-// const store = createStore();
-
-if (typeof window === 'object') {
-  console.log(matchRoutes(routes, window.location.pathname))
-}
+import routes from './routes';
 
 class App extends Component {
   render() {
-    return (<main>
+    return (<div>
         <Header/>
-        {/* <Routes/> */}
         {renderRoutes(routes)}
-      </main>
+      </div>
     );
   }
 }

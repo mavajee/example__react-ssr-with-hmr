@@ -1,30 +1,62 @@
-import React from 'react'
-import { Route, Switch } from 'react-router'
-import Loadable from 'react-loadable';
-import NotFound from './404';
-import RouteWithStatusCode from './../components/router/RouteWithStatusCode';
+import React from "react";
+import Loadable from "react-loadable";
 
-import Home from './home'
+import NotFound from "./404";
+import Home from "./home";
 
 const Search = Loadable({
-  loader: () => import(/* webpackChunkName: "search" */ './search'),
+  loader: () => import(/* webpackChunkName: "search-page" */ "./search"),
   loading: () => null,
-  modules: ['search']
+  modules: ["search"]
 });
 
 const Terms = Loadable({
-  loader: () => import(/* webpackChunkName: "terms-page" */ './terms'),
+  loader: () => import(/* webpackChunkName: "terms-page" */ "./terms"),
   loading: () => null,
-  modules: ['terms']
+  modules: ["terms"]
 });
 
-const BasicExample = () => (
-  <Switch>
-    <Route exact path="/" component={Home}/>
-    <Route path="/search" component={Search}/>
-    <Route path="/terms" component={Terms}/>
-    <RouteWithStatusCode code={404} component={NotFound}/>
-  </Switch>
-)
+const Example = Loadable({
+  loader: () => import(/* webpackChunkName: "example-page" */ "./example"),
+  loading: () => null,
+  modules: ["example"]
+});
 
-export default BasicExample
+export default [
+  {
+    path: "/home",
+    exact: true,
+    component: Home
+  },
+  {
+    path: "/search",
+    exact: true,
+    component: Search
+  },
+  {
+    path: "/terms",
+    exact: true,
+    component: Terms
+  },
+  {
+    path: "/example",
+    component: Example,
+    routes: [
+      {
+        path: "/example/nested",
+        exact: true,
+        component: () => (
+          <div id="test" class="test">
+            Test
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    render({ staticContext }) {
+      if (staticContext) staticContext.status = 404;
+      return React.createElement(NotFound);
+    }
+  }
+];

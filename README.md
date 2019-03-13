@@ -4,6 +4,11 @@
 - Prefetch data on server side
 - HMR with ssr
 
+in work...
+- map files;
+- more frendly errors when render app on server side;
+- server config validation.
+
 ## WARNIGN 
 
 Wait for react-route update bug with ssr. [issue](https://github.com/ReactTraining/react-router/commit/f4081ae12e32788ac0580f83d1965cb69585d2d6). Or manualy fix react-route-dom/Link.
